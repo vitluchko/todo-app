@@ -5,6 +5,8 @@ import { DatabaseModule } from './database/database.module';
 import databaseConfig from './config/db.config';
 import appConfig from './config/app.config';
 import * as Joi from 'joi';
+import { UserModule } from './modules/user/user.module';
+import { TodoModule } from './modules/todo/todo.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import * as Joi from 'joi';
       }),
     }),
     DatabaseModule,
+    UserModule,
+    TodoModule,
   ],
   controllers: [],
   providers: [],
