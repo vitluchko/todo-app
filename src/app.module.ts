@@ -7,6 +7,9 @@ import appConfig from './config/app.config';
 import * as Joi from 'joi';
 import { UserModule } from './modules/user/user.module';
 import { TodoModule } from './modules/todo/todo.module';
+import { AuthModule } from './modules/auth/auth.module';
+import redisConfig from './config/redis.config';
+import { RedisModule } from './modules/redis/redis.module';
 
 @Module({
   imports: [
@@ -15,6 +18,7 @@ import { TodoModule } from './modules/todo/todo.module';
       load: [
         appConfig,
         databaseConfig,
+        redisConfig,
       ],
       validationSchema: Joi.object({
         DB_USER_PASSWORD: Joi.string().required(),
@@ -23,11 +27,17 @@ import { TodoModule } from './modules/todo/todo.module';
         DB_NAME: Joi.string().required(),
         DB_PORT: Joi.number(),
         PORT: Joi.number(),
+        REDIS_HOST: Joi.string().required(),
+        REDIS_PORT: Joi.number(),
+        REDIS_USER: Joi.string().required(),
+        //REDIS_PASSWORD: Joi.string(),
       }),
     }),
     DatabaseModule,
+    RedisModule,
     UserModule,
     TodoModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
