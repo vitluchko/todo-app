@@ -11,13 +11,13 @@ import { RedisService } from "./redis.service";
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => {
                 const store = await redisStore({
-                    ttl: 30 * 1000,
+                    ttl: 3600 * 1000,
                     socket: {
                         host: configService.get<string>('redisHost'),
                         port: configService.get<number>('redisPort'),                        
                     },
                     username: configService.get<string>('redisUser'),
-                    //password: configService.get<string>('redisPassword'),
+                    password: configService.get<string>('redisPassword'),
                 });
                 return { store };
             },

@@ -8,7 +8,7 @@ export class RedisService {
         private readonly cacheManager: Cache,
     ) { }
 
-    async insertUser(key: string, value: string): Promise<void> {
-        await this.cacheManager.set(key, value);
+    async insertTokens(key: string, aceess_token: string, refresh_token: string): Promise<void> {
+        await this.cacheManager.set(key, { aceess_token, refresh_token });
     }
 }

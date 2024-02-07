@@ -1,28 +1,43 @@
-import { Body, Controller, HttpException, HttpStatus, Post, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, HttpCode, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { User } from "../user/entities/user.entity";
-import { CreateUserDto } from "../user/dtos/create-user.dto";
-import { CacheInterceptor, CacheTTL } from "@nestjs/cache-manager";
-import { RedisService } from "../redis/redis.service";
+import { LocalAuthGuard } from "./guards/local-auth.guard";
+import { RegisterDto } from "./dtos/register.dto";
+import RequestWithUser from "./interfaces/user-request.interface";
+import { Response } from "express";
+import JwtAuthenticationGuard from "./guards/jwt-auth.guard";
 
 @Controller('auth')
 export class AuthController {
     constructor(
-        private readonly service: AuthService,
-        private readonly redisService: RedisService,
+        private readonly authService: AuthService,
     ) { }
 
-    @UseInterceptors(CacheInterceptor)
-    @CacheTTL(60 * 1000)
     @Post('register')
-    async register(
-        @Body() userDto: CreateUserDto,
-    ): Promise<User> {
-        try {
-            await this.redisService.insertUser(userDto.email, userDto.name);
-            return await this.service.registerUser(userDto);
-        } catch (error) {
-            throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-        }
+    async register(@Body() registrationData: RegisterDto) {
+        return this.authService.register(registrationData);
+    }
+
+    @HttpCode(200)
+    @UseGuards(LocalAuthGuard)
+    @Post('login')
+    async login(
+        @Req() request: RequestWithUser,
+        @Res() response: Response,
+    ) {
+        const { user } = request;
+        const cookie = this.authService.getCookieWithJwtToken(user.id);
+        response.setHeader('Set-Cookie', cookie);
+        user.password = undefined;
+        return response.send(user);
+    }
+
+    @UseGuards(JwtAuthenticationGuard)
+    @Post('logout')
+    async logout(
+        @Req() request: RequestWithUser, 
+        @Res() response: Response,
+    ) {
+        response.setHeader('Set-Cookie', this.authService.getCookieForLogout());
+        return response.sendStatus(200);
     }
 }

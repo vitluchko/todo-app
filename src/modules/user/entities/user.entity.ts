@@ -1,7 +1,7 @@
 import { Todo } from "src/modules/todo/entities/todo.entity";
 import { BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity({ name: 'user' })
+@Entity()
 export class User {
     @PrimaryGeneratedColumn()
     id: number;
