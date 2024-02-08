@@ -8,9 +8,11 @@ export class UserController {
         private readonly userService: UserService,
     ) { }
 
-    @Get(':username')
+    @Get(':email')
     @UseGuards(JwtAuthenticationGuard)
-    async getUser(@Param('username') username: string) {
-        return await this.userService.getByName(username);
+    async getUser(@Param('email') email: string) {
+        const user = await this.userService.getByEmail(email);
+        user.password = undefined;
+        return user;
     }
 }

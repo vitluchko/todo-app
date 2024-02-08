@@ -31,15 +31,21 @@ export class UserService {
         if (user) {
             return user;
         }
-        throw new HttpException('User with this id does not exist', HttpStatus.NOT_FOUND);  
+        throw new HttpException('User with this id does not exist', HttpStatus.NOT_FOUND);
     }
 
     async getByName(name: string): Promise<User> {
-        const user = await this.userRepository.findOne({ where: { name }});
+        const user = await this.userRepository.findOne({ where: { name } });
         if (user) {
             user.password = undefined;
             return user;
         }
         throw new HttpException('User with this name does not exist', HttpStatus.NOT_FOUND);
+    }
+
+    async markEmailAsConfirmed(email: string) {
+        return this.userRepository.update({ email }, {
+            isEmailConfirmed: true
+        });
     }
 }

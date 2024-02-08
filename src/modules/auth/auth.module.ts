@@ -8,12 +8,14 @@ import { PassportModule } from "@nestjs/passport";
 import { LocalStrategy } from "./strategies/local.strategy";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { JwtRefreshTokenStrategy } from "./strategies/refresh-token.strategy";
+import { EmailModule } from "../email/email.module";
 
 @Module({
     imports: [
         UserModule,
         PassportModule,
         RedisModule,
+        EmailModule,
         JwtModule.register({ }),
     ],
     controllers: [AuthController],

@@ -10,6 +10,7 @@ import { TodoModule } from './modules/todo/todo.module';
 import { AuthModule } from './modules/auth/auth.module';
 import redisConfig from './config/redis.config';
 import { RedisModule } from './modules/redis/redis.module';
+import { EmailModule } from './modules/email/email.module';
 
 @Module({
   imports: [
@@ -35,6 +36,12 @@ import { RedisModule } from './modules/redis/redis.module';
         ACCESS_EXPIRATION_TIME: Joi.string().required(),
         REFRESH_KEY: Joi.string().required(),
         REFRESH_EXPIRATION_TIME: Joi.string().required(),
+        EMAIL_SERVICE: Joi.string().required(),
+        EMAIL_USER: Joi.string().required(),
+        EMAIL_PASSWORD: Joi.string().required(),
+        VERIFICATION_KEY: Joi.string().required(),
+        VERIFICATION_EXPIRATION_TIME: Joi.string().required(),
+        EMAIL_CONFIRMATION_URL: Joi.string().required(),
       }),
     }),
     DatabaseModule,
@@ -42,6 +49,7 @@ import { RedisModule } from './modules/redis/redis.module';
     UserModule,
     TodoModule,
     AuthModule,
+    EmailModule,
   ],
   controllers: [],
   providers: [],

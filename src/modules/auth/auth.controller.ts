@@ -7,19 +7,21 @@ import { Response } from "express";
 import JwtAuthenticationGuard from "./guards/jwt-auth.guard";
 import { RedisService } from "../redis/redis.service";
 import JwtRefreshGuard from "./guards/refresh-auth.guard";
-import { UserService } from "../user/user.service";
+import { EmailConfirmationService } from "../email/services/email-confirm.service";
 
 @Controller('auth')
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
         private readonly redisService: RedisService,
-        private readonly userService: UserService,
+        private readonly emailConfirmationService: EmailConfirmationService,
     ) { }
 
     @Post('register')
     async register(@Body() registrationData: RegisterDto) {
-        return this.authService.register(registrationData);
+        const user = this.authService.register(registrationData);
+        await this.emailConfirmationService.sendVerificationLink(registrationData.email);
+        return user;
     }
 
     @HttpCode(200)
