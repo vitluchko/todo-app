@@ -1,5 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable, forwardRef } from "@nestjs/common";
-import { RedisService } from "../redis/redis.service";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { UserService } from "../user/user.service";
@@ -8,10 +7,7 @@ import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class AuthService {
-    constructor (
-        @Inject(forwardRef(() => RedisService))
-        private readonly redisService: RedisService,
-
+    constructor(
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService,
         private readonly userService: UserService,
@@ -55,13 +51,32 @@ export class AuthService {
         }
     }
 
-    public getCookieWithJwtToken(userId: number) {
+    public getCookieWithJwtAccessToken(userId: number) {
         const payload: TokenPayload = { userId };
-        const token = this.jwtService.sign(payload);
+        const token = this.jwtService.sign(payload, {
+            secret: this.configService.get<string>('ACCESS_KEY'),
+            expiresIn: `${this.configService.get<string>('ACCESS_EXPIRATION_TIME')}s`,
+        });
         return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get<string>('ACCESS_EXPIRATION_TIME')}`;
     }
 
+    public getCookieWithJwtRefreshToken(userId: number) {
+        const payload: TokenPayload = { userId };
+        const token = this.jwtService.sign(payload, {
+            secret: this.configService.get<string>('REFRESH_KEY'),
+            expiresIn: `${this.configService.get<string>('REFRESH_EXPIRATION_TIME')}s`,
+        });
+        const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get<string>('REFRESH_EXPIRATION_TIME')}`
+        return {
+            cookie,
+            token
+        }
+    }
+
     public getCookieForLogout() {
-        return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
+        return [
+            'Authentication=; HttpOnly; Path=/; Max-Age=0',
+            'Refresh=; HttpOnly; Path=/; Max-Age=0'
+        ];
     }
 }

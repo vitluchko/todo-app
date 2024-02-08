@@ -33,6 +33,8 @@ import { RedisModule } from './modules/redis/redis.module';
         REDIS_PASSWORD: Joi.string().required(),
         ACCESS_KEY: Joi.string().required(),
         ACCESS_EXPIRATION_TIME: Joi.string().required(),
+        REFRESH_KEY: Joi.string().required(),
+        REFRESH_EXPIRATION_TIME: Joi.string().required(),
       }),
     }),
     DatabaseModule,

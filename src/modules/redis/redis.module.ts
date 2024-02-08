@@ -11,7 +11,7 @@ import { RedisService } from "./redis.service";
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => {
                 const store = await redisStore({
-                    ttl: 3600 * 1000,
+                    ttl: parseInt(configService.get<string>('REFRESH_EXPIRATION_TIME')) * 1000,
                     socket: {
                         host: configService.get<string>('redisHost'),
                         port: configService.get<number>('redisPort'),                        
