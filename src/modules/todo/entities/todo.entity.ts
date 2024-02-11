@@ -12,7 +12,7 @@ export class Todo {
     @Column()
     description: string;
 
-    @Column()
+    @Column({ default: false })
     isConfirmed: boolean;
 
     @Column({ name: 'user_id' })
