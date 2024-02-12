@@ -6,9 +6,11 @@ import RequestWithUser from "../auth/interfaces/user-request.interface";
 import JwtAuthenticationGuard from "../auth/guards/jwt-auth.guard";
 import { UpdateTodoDto } from "./dtos/update-todo.dto";
 import { FindOneParams } from "./utils/find-one.params";
+import { ApiBody, ApiParam, ApiTags } from "@nestjs/swagger";
 
 @UseGuards(JwtAuthenticationGuard)
 @Controller('todo')
+@ApiTags('todo')
 @UseInterceptors(ClassSerializerInterceptor)
 export default class TodoController {
     constructor (
@@ -16,6 +18,7 @@ export default class TodoController {
     ) { }
 
     @Post()
+    @ApiBody({ type: CreateTodoDto })
     async createTodo(
         @Req() request: RequestWithUser,
         @Body() data: CreateTodoDto
@@ -33,11 +36,24 @@ export default class TodoController {
     }
 
     @Get(':id')
+    @ApiParam({
+        name: 'id',
+        required: true,
+        description: 'Should be an id of a todo that exists in the database',
+        type: Number,
+    })
     async getOne(@Param() { id }: FindOneParams) {
         return await this.todoService.getById(Number(id));
     }
 
     @Put(':id')
+    @ApiParam({
+        name: 'id',
+        required: true,
+        description: 'Should be an id of a todo that exists in the database',
+        type: Number,
+    })
+    @ApiBody({ type: UpdateTodoDto })
     async update(
         @Param() { id }: FindOneParams,
         @Body() data: UpdateTodoDto
@@ -48,6 +64,12 @@ export default class TodoController {
     }
 
     @Delete(':id')
+    @ApiParam({
+        name: 'id',
+        required: true,
+        description: 'Should be an id of a todo that exists in the database',
+        type: Number,
+    })
     async remove(@Param() { id }: FindOneParams) {
         return await this.todoService.delete(Number(id));
     }

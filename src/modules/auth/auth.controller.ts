@@ -8,8 +8,11 @@ import JwtAuthenticationGuard from "./guards/jwt-auth.guard";
 import { RedisService } from "../redis/redis.service";
 import JwtRefreshGuard from "./guards/refresh-auth.guard";
 import { EmailConfirmationService } from "../email/services/email-confirm.service";
+import { ApiBody, ApiTags } from "@nestjs/swagger";
+import { LoginDto } from "./dtos/login.dto";
 
 @Controller('auth')
+@ApiTags('auth')
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
@@ -18,6 +21,7 @@ export class AuthController {
     ) { }
 
     @Post('register')
+    @ApiBody({ type: RegisterDto })
     async register(@Body() registrationData: RegisterDto) {
         const user = this.authService.register(registrationData);
         await this.emailConfirmationService.sendVerificationLink(registrationData.email);
@@ -27,6 +31,7 @@ export class AuthController {
     @HttpCode(200)
     @UseGuards(LocalAuthGuard)
     @Post('login')
+    @ApiBody({ type: LoginDto })
     async login(
         @Req() request: RequestWithUser,
         @Res() response: Response,
