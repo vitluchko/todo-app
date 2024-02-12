@@ -23,7 +23,10 @@ export class UserService {
         if (user) {
             return user;
         }
-        throw new HttpException('User with this email does not exist', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+            { status: HttpStatus.NOT_FOUND, error: 'Invalid Credentials' },
+            HttpStatus.NOT_FOUND,
+        );
     }
 
     async getById(id: number): Promise<User> {
@@ -31,7 +34,10 @@ export class UserService {
         if (user) {
             return user;
         }
-        throw new HttpException('User with this id does not exist', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+            { status: HttpStatus.NOT_FOUND, error: 'Invalid Credentials' },
+            HttpStatus.NOT_FOUND,
+        );
     }
 
     async getByName(name: string): Promise<User> {
@@ -40,7 +46,10 @@ export class UserService {
             user.password = undefined;
             return user;
         }
-        throw new HttpException('User with this name does not exist', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+            { status: HttpStatus.NOT_FOUND, error: 'Invalid Credentials' },
+            HttpStatus.NOT_FOUND,
+        );
     }
 
     async markEmailAsConfirmed(email: string) {

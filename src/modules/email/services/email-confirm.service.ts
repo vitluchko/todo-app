@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import EmailService from "./email.service";
@@ -35,7 +35,7 @@ export class EmailConfirmationService {
     public async confirmEmail(email: string) {
         const user = await this.userService.getByEmail(email);
         if (user.isEmailConfirmed) {
-            throw new BadRequestException('Email already confirmed');
+            throw new ConflictException('Email already confirmed');
         }
         await this.userService.markEmailAsConfirmed(email);
     }
@@ -53,7 +53,7 @@ export class EmailConfirmationService {
         } catch (error) {
             console.log(error.name);
             if (error?.name === 'TokenExpiredError') {
-                throw new BadRequestException('Email confirmation token expired');
+                throw new ConflictException('Email confirmation token expired');
             }
             throw new BadRequestException('Bad confirmation token');
         }
@@ -62,7 +62,7 @@ export class EmailConfirmationService {
     public async resendConfirmationLink(userId: number) {
         const user = await this.userService.getById(userId);
         if (user.isEmailConfirmed) {
-            throw new BadRequestException('Email already confirmed');
+            throw new ConflictException('Email already confirmed');
         }
         await this.sendVerificationLink(user.email);
     }

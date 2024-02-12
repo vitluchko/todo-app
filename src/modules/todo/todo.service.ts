@@ -11,11 +11,17 @@ export class TodoService {
     ) { }
 
     async getAll(userId: number) {
-        const todos = await this.todoRepository.find({ where: { user_id: userId } });
-        if (todos) {
-            return todos;
+        try {
+            const todos = await this.todoRepository.find({ where: { user_id: userId } });
+            if (todos) {
+                return todos;
+            }
+        } catch (error) {
+            throw new HttpException(
+                { status: HttpStatus.NOT_FOUND, error: error.message },
+                HttpStatus.NOT_FOUND,
+            );
         }
-        throw new HttpException('Todos do not exist', HttpStatus.NOT_FOUND);
     }
 
     async createTodo(todo: Todo) {
@@ -27,13 +33,19 @@ export class TodoService {
         if (todo) {
             return todo;
         }
-        throw new HttpException('Todo does not exist', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+            { status: HttpStatus.NOT_FOUND, error: 'Not found' },
+            HttpStatus.NOT_FOUND,
+        );
     }
 
     async update(id: number, todo: Todo) {
         const hasTodo = await this.getById(id);
         if (!hasTodo) {
-            throw new HttpException('Todo with this id does not exist', HttpStatus.NOT_FOUND);
+            throw new HttpException(
+                { status: HttpStatus.NOT_FOUND, error: 'Not found' },
+                HttpStatus.NOT_FOUND,
+            );
         }
 
         Object.assign(hasTodo, todo);
@@ -44,7 +56,10 @@ export class TodoService {
     async delete(id: number) {
         const hasTodo = await this.getById(id);
         if (!hasTodo) {
-            throw new HttpException('Todo with this id does not exist', HttpStatus.NOT_FOUND);
+            throw new HttpException(
+                { status: HttpStatus.NOT_FOUND, error: 'Not found' },
+                HttpStatus.NOT_FOUND,
+            );
         }
         await this.todoRepository.delete(id);
     }
@@ -52,7 +67,10 @@ export class TodoService {
     async deleteAll(userId: number) {
         const todos = await this.todoRepository.find({ where: { user_id: userId } });
         if (!todos) {
-            throw new HttpException('Todos do not exist', HttpStatus.NOT_FOUND);
+            throw new HttpException(
+                { status: HttpStatus.NOT_FOUND, error: 'Not found' },
+                HttpStatus.NOT_FOUND,
+            );
         }
         await this.todoRepository.remove(todos);
     }

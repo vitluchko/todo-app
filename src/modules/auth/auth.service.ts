@@ -24,9 +24,15 @@ export class AuthService {
             return createdUser;
         } catch (error) {
             if (error?.code === 'ER_DUP_ENTRY') {
-                throw new HttpException('User with that email already exists', HttpStatus.BAD_REQUEST);
+                throw new HttpException(
+                    { status: HttpStatus.CONFLICT, error: `User with ${registraitonData.email} already exists` },
+                    HttpStatus.CONFLICT,
+                );
             }
-            throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException(
+                { status: HttpStatus.INTERNAL_SERVER_ERROR, error: error.message },
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
@@ -37,7 +43,10 @@ export class AuthService {
             user.password = undefined;
             return user;
         } catch (error) {
-            throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
+            throw new HttpException(
+                { status: HttpStatus.NOT_FOUND, error: 'Invalid Credentials' },
+                HttpStatus.NOT_FOUND,
+            );
         }
     }
 
@@ -47,7 +56,10 @@ export class AuthService {
             hashedPassword,
         );
         if (!isPasswordMatching) {
-            throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
+            throw new HttpException(
+                { status: HttpStatus.NOT_FOUND, error: 'Invalid Credentials' },
+                HttpStatus.NOT_FOUND,
+            );
         }
     }
 

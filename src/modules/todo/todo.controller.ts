@@ -1,13 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Post, Put, Req, UseGuards, UseInterceptors } from "@nestjs/common";
 import { TodoService } from "./todo.service";
 import { CreateTodoDto } from "./dtos/create-todo.dto";
 import { Todo } from "./entities/todo.entity";
 import RequestWithUser from "../auth/interfaces/user-request.interface";
 import JwtAuthenticationGuard from "../auth/guards/jwt-auth.guard";
 import { UpdateTodoDto } from "./dtos/update-todo.dto";
+import { FindOneParams } from "./utils/find-one.params";
 
 @UseGuards(JwtAuthenticationGuard)
 @Controller('todo')
+@UseInterceptors(ClassSerializerInterceptor)
 export default class TodoController {
     constructor (
         private readonly todoService: TodoService,
@@ -31,23 +33,23 @@ export default class TodoController {
     }
 
     @Get(':id')
-    async getOne(@Param('id') id: string) {
-        return await this.todoService.getById(+id);
+    async getOne(@Param() { id }: FindOneParams) {
+        return await this.todoService.getById(Number(id));
     }
 
     @Put(':id')
     async update(
-        @Param('id') id: string,
+        @Param() { id }: FindOneParams,
         @Body() data: UpdateTodoDto
     ) {
         const updatedTodo = new Todo();
         Object.assign(updatedTodo, data)
-        return await this.todoService.update(+id, updatedTodo);
+        return await this.todoService.update(Number(id), updatedTodo);
     }
 
     @Delete(':id')
-    async remove(@Param('id') id: string) {
-        return await this.todoService.delete(+id);
+    async remove(@Param() { id }: FindOneParams) {
+        return await this.todoService.delete(Number(id));
     }
 
     @Delete()
