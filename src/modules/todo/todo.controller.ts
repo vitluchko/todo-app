@@ -32,7 +32,8 @@ export default class TodoController {
 
     @Get()
     async getAll(@Req() request: RequestWithUser) {
-        return await this.todoService.getAll(request.user.id);
+        await this.todoService.getAll(request.user.id);
+        return { message: 'success' };
     }
 
     @Get(':id')
@@ -43,7 +44,8 @@ export default class TodoController {
         type: Number,
     })
     async getOne(@Param() { id }: FindOneParams) {
-        return await this.todoService.getById(Number(id));
+        await this.todoService.getById(Number(id));
+        return { message: 'success' };
     }
 
     @Put(':id')
@@ -60,7 +62,8 @@ export default class TodoController {
     ) {
         const updatedTodo = new Todo();
         Object.assign(updatedTodo, data)
-        return await this.todoService.update(Number(id), updatedTodo);
+        await this.todoService.update(Number(id), updatedTodo);
+        return { message: 'success' };
     }
 
     @Delete(':id')
@@ -71,7 +74,8 @@ export default class TodoController {
         type: Number,
     })
     async remove(@Param() { id }: FindOneParams) {
-        return await this.todoService.delete(Number(id));
+        await this.todoService.delete(Number(id));
+        return { message: 'success' };
     }
 
     @Delete()
